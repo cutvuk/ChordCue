@@ -1,13 +1,14 @@
 import SwiftUI
+import Combine
 
 struct Chord: Identifiable, Codable {
-    let id = UUID()
+    var id = UUID()
     var name: String
     var diagram: String
 }
 
 struct Song: Identifiable, Codable {
-    let id = UUID()
+    var id = UUID()
     var title: String
     var chords: [Chord]
     var tempo: Double // beats per minute
