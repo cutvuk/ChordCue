@@ -8,14 +8,14 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var store = SongStore()
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        if let song = store.songs.first {
+            SongPlayerView(song: song)
+        } else {
+            Text("No songs")
         }
-        .padding()
     }
 }
 
