@@ -12,6 +12,7 @@ struct Song: Identifiable, Codable {
     var title: String
     var chords: [Chord]
     var tempo: Double // beats per minute
+    var repeatCount: Int
 }
 
 class SongStore: ObservableObject {
@@ -24,14 +25,18 @@ class SongStore: ObservableObject {
     @Published var songs: [Song] = []
 
     init() {
-        addSong(title: "Sample Song", chordNames: ["C", "G", "Am", "F"], tempo: 120)
+        addSong(title: "Sample Song", chordNames: ["C", "G", "Am", "F"], tempo: 120, repeatCount: 1)
     }
 
-    func addSong(title: String, chordNames: [String], tempo: Double) {
+    func addSong(title: String, chordNames: [String], tempo: Double, repeatCount: Int) {
         let songChords = chordNames.map { name in
             chords.first(where: { $0.name == name }) ?? Chord(name: name, diagram: name)
         }
-        songs.append(Song(title: title, chords: songChords, tempo: tempo))
+        addSong(title: title, chords: songChords, tempo: tempo, repeatCount: repeatCount)
+    }
+
+    func addSong(title: String, chords: [Chord], tempo: Double, repeatCount: Int) {
+        songs.append(Song(title: title, chords: chords, tempo: tempo, repeatCount: repeatCount))
     }
 
     func addChord(name: String) {
