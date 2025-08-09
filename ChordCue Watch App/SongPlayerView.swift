@@ -20,6 +20,9 @@ struct SongPlayerView: View {
     }
 
     func start() {
+        timer?.invalidate()
+        index = 0
+        guard song.tempo > 0 else { return }
         let interval = 60.0 / song.tempo
         timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
             if index + 1 < song.chords.count {
