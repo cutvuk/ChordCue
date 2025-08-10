@@ -44,6 +44,7 @@ struct SongListView: View {
                             }
                         }
                     }
+                    .onDelete(perform: store.deleteSong)
                 }
                 Section("Add Song") {
                     TextField("Title", text: $title)
@@ -92,8 +93,11 @@ struct ChordListView: View {
             List {
                 Section("Chords") {
                     ForEach(store.chords) { chord in
-                        Text(chord.name)
+                        NavigationLink(destination: ChordEditorView(store: store, chord: chord)) {
+                            Text(chord.name)
+                        }
                     }
+                    .onDelete(perform: store.deleteChord)
                 }
                 Section("Add Chord") {
                     TextField("Name", text: $newChord)
@@ -175,6 +179,39 @@ struct SongEditorView: View {
                         store.updateSong(song, title: title, chords: sequence, tempo: bpm, repeatCount: reps)
                         dismiss()
                     }
+                }
+            }
+        }
+    }
+}
+
+struct ChordEditorView: View {
+    @ObservedObject var store: SongStore
+    var chord: Chord
+    @State private var name: String
+    @State private var diagram: String
+    @Environment(\.dismiss) private var dismiss
+
+    init(store: SongStore, chord: Chord) {
+        self.store = store
+        self.chord = chord
+        _name = State(initialValue: chord.name)
+        _diagram = State(initialValue: chord.diagram)
+    }
+
+    var body: some View {
+        Form {
+            Section("Chord") {
+                TextField("Name", text: $name)
+                TextField("Diagram", text: $diagram)
+            }
+        }
+        .navigationTitle("Edit Chord")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Save") {
+                    store.updateChord(chord, name: name, diagram: diagram)
+                    dismiss()
                 }
             }
         }

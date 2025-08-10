@@ -47,4 +47,28 @@ class SongStore: ObservableObject {
         guard let index = songs.firstIndex(where: { $0.id == song.id }) else { return }
         songs[index] = Song(id: song.id, title: title, chords: chords, tempo: tempo, repeatCount: repeatCount)
     }
+
+    func updateChord(_ chord: Chord, name: String, diagram: String? = nil) {
+        guard let index = chords.firstIndex(where: { $0.id == chord.id }) else { return }
+        let updated = Chord(id: chord.id, name: name, diagram: diagram ?? chord.diagram)
+        chords[index] = updated
+        // Update chord in all songs
+        songs = songs.map { song in
+            var newSong = song
+            newSong.chords = song.chords.map { $0.id == chord.id ? updated : $0 }
+            return newSong
+        }
+    }
+
+    func deleteSong(at offsets: IndexSet) {
+        songs.remove(atOffsets: offsets)
+    }
+
+    func deleteChord(at offsets: IndexSet) {
+        let ids = offsets.map { chords[$0].id }
+        chords.remove(atOffsets: offsets)
+        for i in songs.indices {
+            songs[i].chords.removeAll { ids.contains($0.id) }
+        }
+    }
 }
