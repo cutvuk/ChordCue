@@ -11,10 +11,16 @@ struct ContentView: View {
     @StateObject private var store = SongStore()
 
     var body: some View {
-        if let song = store.songs.first {
-            SongPlayerView(song: song)
-        } else {
-            Text("No songs")
+        NavigationStack {
+            List(store.songs) { song in
+                NavigationLink(song.title) {
+                    SongPlayerView(song: song)
+                }
+            }
+            .navigationTitle("Songs")
+            .onAppear {
+                WatchSessionManager.shared.start(store: store)
+            }
         }
     }
 }

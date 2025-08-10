@@ -22,10 +22,15 @@ class SongStore: ObservableObject {
         Chord(name: "Am", diagram: "Am"),
         Chord(name: "F", diagram: "F")
     ]
-    @Published var songs: [Song] = []
+    @Published var songs: [Song] = [] {
+        didSet {
+            WatchSessionManager.shared.sendSongs(songs)
+        }
+    }
 
     init() {
         addSong(title: "Sample Song", chordNames: ["C", "G", "Am", "F"], tempo: 120, repeatCount: 1)
+        WatchSessionManager.shared.sendSongs(songs)
     }
 
     func addSong(title: String, chordNames: [String], tempo: Double, repeatCount: Int) {

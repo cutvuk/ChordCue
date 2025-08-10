@@ -9,6 +9,9 @@ import SwiftUI
 
 @main
 struct ChordCueApp: App {
+    init() {
+        WatchSessionManager.shared.start()
+    }
     var body: some Scene {
         WindowGroup {
             ContentView()

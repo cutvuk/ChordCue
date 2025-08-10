@@ -16,35 +16,9 @@ struct Song: Identifiable, Codable {
 }
 
 class SongStore: ObservableObject {
-    @Published var chords: [Chord] = [
-        Chord(name: "C", diagram: "C"),
-        Chord(name: "G", diagram: "G"),
-        Chord(name: "Am", diagram: "Am"),
-        Chord(name: "F", diagram: "F")
-    ]
     @Published var songs: [Song] = []
 
-    init() {
-        addSong(title: "Sample Song", chordNames: ["C", "G", "Am", "F"], tempo: 120, repeatCount: 1)
-    }
-
-    func addSong(title: String, chordNames: [String], tempo: Double, repeatCount: Int) {
-        let songChords = chordNames.map { name in
-            chords.first(where: { $0.name == name }) ?? Chord(name: name, diagram: name)
-        }
-        addSong(title: title, chords: songChords, tempo: tempo, repeatCount: repeatCount)
-    }
-
-    func addSong(title: String, chords: [Chord], tempo: Double, repeatCount: Int) {
-        songs.append(Song(title: title, chords: chords, tempo: tempo, repeatCount: repeatCount))
-    }
-
-    func addChord(name: String) {
-        chords.append(Chord(name: name, diagram: name))
-    }
-
-    func updateSong(_ song: Song, title: String, chords: [Chord], tempo: Double, repeatCount: Int) {
-        guard let index = songs.firstIndex(where: { $0.id == song.id }) else { return }
-        songs[index] = Song(id: song.id, title: title, chords: chords, tempo: tempo, repeatCount: repeatCount)
+    func updateSongs(_ newSongs: [Song]) {
+        songs = newSongs
     }
 }
