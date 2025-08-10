@@ -36,10 +36,12 @@ struct SongListView: View {
             List {
                 Section("Songs") {
                     ForEach(store.songs) { song in
-                        VStack(alignment: .leading) {
-                            Text(song.title).font(.headline)
-                            Text(song.chords.map { $0.name }.joined(separator: " "))
-                                .font(.caption)
+                        NavigationLink(destination: SongEditorView(store: store, song: song)) {
+                            VStack(alignment: .leading) {
+                                Text(song.title).font(.headline)
+                                Text(song.chords.map { $0.name }.joined(separator: " "))
+                                    .font(.caption)
+                            }
                         }
                     }
                 }
@@ -102,6 +104,79 @@ struct ChordListView: View {
                 }
             }
             .navigationTitle("Chords")
+        }
+    }
+}
+
+struct SongEditorView: View {
+    @ObservedObject var store: SongStore
+    var song: Song
+    @State private var title: String
+    @State private var tempo: String
+    @State private var repeatCount: String
+    @State private var sequence: [Chord]
+    @Environment(\.dismiss) private var dismiss
+
+    init(store: SongStore, song: Song) {
+        self.store = store
+        self.song = song
+        _title = State(initialValue: song.title)
+        _tempo = State(initialValue: String(song.tempo))
+        _repeatCount = State(initialValue: String(song.repeatCount))
+        _sequence = State(initialValue: song.chords)
+    }
+
+    var body: some View {
+        List {
+            Section("Title") {
+                TextField("Title", text: $title)
+            }
+            Section("Chords") {
+                ScrollView(.horizontal) {
+                    HStack {
+                        ForEach(store.chords) { chord in
+                            Button(chord.name) {
+                                sequence.append(chord)
+                            }
+                            .padding(4)
+                            .background(Color.gray.opacity(0.2))
+                            .cornerRadius(4)
+                        }
+                    }
+                }
+                if !sequence.isEmpty {
+                    ScrollView(.horizontal) {
+                        HStack {
+                            ForEach(Array(sequence.enumerated()), id: \.offset) { index, chord in
+                                Text(chord.name)
+                                    .padding(4)
+                                    .background(Color.blue.opacity(0.2))
+                                    .cornerRadius(4)
+                                    .onTapGesture {
+                                        sequence.remove(at: index)
+                                    }
+                            }
+                        }
+                    }
+                }
+            }
+            Section("Settings") {
+                TextField("Repeat Count", text: $repeatCount)
+                    .keyboardType(.numberPad)
+                TextField("Tempo BPM", text: $tempo)
+                    .keyboardType(.decimalPad)
+            }
+        }
+        .navigationTitle("Edit Song")
+        .toolbar {
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button("Save") {
+                    if let bpm = Double(tempo), let reps = Int(repeatCount), !sequence.isEmpty {
+                        store.updateSong(song, title: title, chords: sequence, tempo: bpm, repeatCount: reps)
+                        dismiss()
+                    }
+                }
+            }
         }
     }
 }

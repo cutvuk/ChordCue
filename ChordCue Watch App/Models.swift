@@ -42,4 +42,9 @@ class SongStore: ObservableObject {
     func addChord(name: String) {
         chords.append(Chord(name: name, diagram: name))
     }
+
+    func updateSong(_ song: Song, title: String, chords: [Chord], tempo: Double, repeatCount: Int) {
+        guard let index = songs.firstIndex(where: { $0.id == song.id }) else { return }
+        songs[index] = Song(id: song.id, title: title, chords: chords, tempo: tempo, repeatCount: repeatCount)
+    }
 }
