@@ -94,7 +94,12 @@ struct ChordListView: View {
                 Section("Chords") {
                     ForEach(store.chords) { chord in
                         NavigationLink(destination: ChordEditorView(store: store, chord: chord)) {
-                            Text(chord.name)
+                            HStack {
+                                Text(chord.name)
+                                Spacer()
+                                ChordDiagramView(diagram: chord.diagram)
+                                    .frame(width: 40, height: 60)
+                            }
                         }
                     }
                     .onDelete(perform: store.deleteChord)
@@ -204,6 +209,9 @@ struct ChordEditorView: View {
             Section("Chord") {
                 TextField("Name", text: $name)
                 TextField("Diagram", text: $diagram)
+                ChordDiagramView(diagram: diagram)
+                    .frame(width: 120, height: 160)
+                    .padding(.top, 8)
             }
         }
         .navigationTitle("Edit Chord")
